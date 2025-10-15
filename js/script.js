@@ -27,7 +27,7 @@ const articles = [
   }
 ];
 
-articles.forEach(article=>{
+articles.forEach(article => {
   addEntry(article);
 });
 
@@ -43,7 +43,7 @@ function addEntry(article) {
   articlesWrapper.appendChild(articleElement);
 
   const deleteButton = document.createElement('button');
-  deleteButton.textContent='✕';
+  deleteButton.textContent = '✕';
   deleteButton.classList.add('delete-btn');
   articleElement.appendChild(deleteButton);
 
@@ -52,12 +52,10 @@ function addEntry(article) {
   const avatar = document.createElement('img');
   avatar.classList.add('avatar');
   const authorIndex = authors.indexOf(article.author);
-  if (authorIndex !== -1)
-  {
+  if (authorIndex !== -1) {
     avatar.src = `images/avatar${authorIndex}.png`;
   }
-  else
-  {
+  else {
     avatar.src = 'images/default.jpeg'
   }
   avatar.alt = 'avatar picture';
@@ -77,13 +75,11 @@ function addEntry(article) {
   bodyDiv.appendChild(p);
   articleElement.appendChild(bodyDiv);
 
-  if (article.content.length <= MAX_LENGTH)
-  {
+  if (article.content.length <= MAX_LENGTH) {
     p.textContent = article.content;
     bodyDiv.appendChild(p);
   }
-  else
-  {
+  else {
     const firstSubstring = article.content.substring(0, MAX_LENGTH);
     const secondSubstring = article.content.substring(MAX_LENGTH);
     p.textContent = firstSubstring;
@@ -105,3 +101,70 @@ function addEntry(article) {
 
   articleElement.appendChild(bodyDiv);
 }
+
+const form = document.querySelector('form');
+
+form.addEventListener('submit', function (event) {
+  event.preventDefault();
+
+  if (!form.reportValidity()) {
+    return;
+  }
+
+  const title = document.getElementById('title').value;
+  const author = document.getElementById('author').value;
+  const content = document.getElementById('content').value;
+  const date = new Date();
+
+
+  const newArticle = {
+    title: title,
+    author: author,
+    content: content,
+    date: date
+  };
+
+  articles.push(newArticle);
+  addEntry(newArticle);
+
+
+  form.reset();
+});
+
+
+const articlesWrapper = document.querySelector('.articles-wrapper');
+
+articlesWrapper.addEventListener('click', function (event) {
+  const clicked = event.target;
+
+  if (clicked.classList.contains('delete-btn')) {
+    const arBox = clicked.closest('.article-container');
+    const arTitle = arBox.querySelector('h3').textContent;
+
+
+    arBox.remove();
+
+    const index = articles.findIndex(a => a.title === arTitle);
+    if (index !== -1) {
+      articles.splice(index, 1);
+    }
+  }
+
+
+  if (clicked.classList.contains('btn')) {
+    const paragraph = clicked.previousElementSibling;
+    const spans = paragraph.querySelectorAll('span');
+
+    spans.forEach(span => {
+      span.classList.toggle('hidden');
+    });
+
+    if (clicked.textContent === 'Read More') {
+      clicked.textContent = 'Read Less';
+    }
+    else {
+      clicked.textContent = 'Read More';
+    }
+
+  }
+});
